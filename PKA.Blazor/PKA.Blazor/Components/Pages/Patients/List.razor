@@ -1,0 +1,54 @@
+﻿@using PKA.Blazor.Enumerations
+@using PKA.Blazor.ViewModels
+<h3>Patients</h3>
+
+@if(Patients == null || Patients.Count == 0){
+    <p>Loading...</p>
+}
+else{
+    <table class="table table-bordered table-hover">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Date of birth</th>
+                <th>Age</th>
+                <th>Gender</th>
+                <th>Reason for Visit</th>
+                <th>Pre-medical history</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(var patient in Patients){
+                <tr>
+                    <td>@patient.FirstName @patient.LastName</td>
+                    <td>@patient.DateOfBirth.ToLongDateString()</td>
+                    <td>@patient.Age</td>
+                    <td>@patient.Gender.ToString()</td>
+                    <td>@patient.ReasonForVisit</td>
+                    <td>@patient.PreMedicalHistory</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private IList<PatientsDto> Patients = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        var genders = Enum.GetValues(typeof(Gender));
+        Random random = new Random();
+
+        Patients = Enumerable.Range(1, 20).Select(index => new PatientsDto
+            {
+                FirstName = $"First {index}",
+                LastName = $"Last {index}",
+                DateOfBirth = DateTime.Now.AddYears(-20 - index),
+                Age = DateTime.Today.Year - DateTime.Now.AddYears(-20 - index).Year,
+                Gender = (Gender)genders.GetValue(random.Next(genders.Length)),
+                ReasonForVisit = $"Reason {index}",
+                PreMedicalHistory = $"Pre med history {index}"
+            }).ToArray();
+    }
+}
