@@ -1,10 +1,20 @@
+using Microsoft.EntityFrameworkCore;
 using PKA.Blazor.Components;
+using PKA.Blazor.Domain;
+using PKA.Blazor.Domain.Interfaces;
+using PKA.Blazor.Domain.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+builder.Services.AddDbContext<BlazorDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
+
+builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+builder.Services.AddScoped<IPatientRepository, PatientRepository>();
 
 var app = builder.Build();
 
